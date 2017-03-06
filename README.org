@@ -1,6 +1,8 @@
 * What's This?
 This is a Pomodoro timer indicator for your GTK panel.
 
+[[https://raw.githubusercontent.com/wiki/abo-abo/gtk-pomodoro-indicator/images/gtk-pomodoro-indicator.png]]
+
 * Usage
 Start a timer with a stopwatch icon for 25 minutes:
 #+begin_src sh
