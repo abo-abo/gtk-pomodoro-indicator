@@ -94,7 +94,7 @@ def project_expand (f):
 
 #* Script
 if len (sys.argv) != 3:
-    print "Usage: INDICATE [pb] minutes"
+    print ("Usage: INDICATE [pb] minutes")
     sys.exit (1)
 
 signal.signal (signal.SIGINT, signal.SIG_DFL)
@@ -106,7 +106,7 @@ if icon_type == "p":
 elif icon_type == "b":
     icon_file = project_expand ("icons/coffee.svg")
 else:
-    print "Unknown switch", icon_type
+    print ("Unknown switch", icon_type)
 
 PomodoroIndicator (icon_file, minutes)
 GObject.threads_init ()
