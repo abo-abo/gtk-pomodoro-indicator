@@ -36,10 +36,12 @@
 
 (defvar gpi--dir (file-name-directory load-file-name))
 
+;;;###autoload
 (defun gtk-pomodoro-indicator (params)
   (let ((cmd
          (format "python %s %s"
-                 (expand-file-name "gtk-pomodoro-indicator.py" gpi--dir)
+                 (shell-quote-argument
+                  (expand-file-name "gtk-pomodoro-indicator.py" gpi--dir))
                  params)))
     (when (process-live-p gpi--process)
       (kill-process gpi--process))
