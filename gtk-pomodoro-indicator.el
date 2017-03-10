@@ -34,10 +34,16 @@
 
 (defvar gpi--process nil)
 
-(defvar gpi--dir (file-name-directory load-file-name))
+(defvar gpi--dir (file-name-directory (or load-file-name
+                                          (buffer-file-name))))
 
 ;;;###autoload
 (defun gtk-pomodoro-indicator (params)
+  "Start the pomodoro timer with PARAMS and return the process.
+PARAMS can be either: \"p NUMBER-MINUTES\" or \"b NUMBER-MINUTES\".
+The only difference between the two is the icon type.
+NUMBER-MINUTES is the number of minutes to count down from.
+The timer will self-terminate after it expires."
   (let ((cmd
          (format "python %s %s"
                  (shell-quote-argument
