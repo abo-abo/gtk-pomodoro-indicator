@@ -90,8 +90,12 @@ class PomodoroIndicator ():
         self.update.stop ()
         gtk.main_quit ()
 
+if os.path.islink (__file__):
+    __file__ = os.readlink (__file__)
+project_dir = os.path.dirname (os.path.abspath (__file__))
+
 def project_expand (f):
-    return os.path.join (os.path.dirname (os.path.abspath (__file__)), f)
+    return os.path.join (project_dir, f)
 
 #* Script
 if len (sys.argv) != 3:
