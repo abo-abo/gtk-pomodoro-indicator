@@ -45,10 +45,11 @@ class StoppableThread (threading.Thread):
         return self._stop.isSet ()
 
 class PomodoroIndicator ():
-    def __init__ (self, icon, minutes):
+    def __init__ (self, icon, minutes, count_up = False):
         self.app = "pomodoro-indicator"
         self.start_time = time.time ()
         self.max_time = minutes*60
+        self.count_up = count_up
         self.indicator = appindicator.Indicator.new (
             self.app,
             icon,
@@ -71,14 +72,17 @@ class PomodoroIndicator ():
 
     def show_seconds (self):
         delta = 0
-        while delta < self.max_time and not self.update.stopped ():
+        while self.count_up or (delta < self.max_time and not self.update.stopped ()):
             time.sleep (1)
             delta = int (time.time () - self.start_time)
-            left = self.max_time - delta
-            if left > 60:
-                mention = "%02d" % (left / 60 + 1)
+            if self.count_up:
+                mention = "%02d" % ((delta + self.max_time) / 60)
             else:
-                mention = "00:%02d" % left
+                left = self.max_time - delta
+                if left > 60:
+                    mention = "%02d" % (left / 60 + 1)
+                else:
+                    mention = "00:%02d" % left
             # apply the interface update using  GObject.idle_add ()
             GObject.idle_add (
                 self.indicator.set_label,
@@ -99,20 +103,20 @@ def project_expand (f):
 
 #* Script
 if len (sys.argv) != 3:
-    print ("Usage: INDICATE [pb] minutes")
+    print ("Usage: INDICATE [pbu] minutes")
     sys.exit (1)
 
 signal.signal (signal.SIGINT, signal.SIG_DFL)
 icon_type = sys.argv[1]
 minutes = int (sys.argv[2])
 
-if icon_type == "p":
+if icon_type == "p" or icon_type == "u":
     icon_file = project_expand ("icons/stopwatch.svg")
 elif icon_type == "b":
     icon_file = project_expand ("icons/coffee.svg")
 else:
     print ("Unknown switch", icon_type)
 
-PomodoroIndicator (icon_file, minutes)
+PomodoroIndicator (icon_file, minutes, icon_type == "u")
 GObject.threads_init ()
 gtk.main ()
