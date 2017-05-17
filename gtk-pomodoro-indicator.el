@@ -21,14 +21,7 @@
 
 ;;; Commentary:
 
-;; Integrate with `org-pomodoro-start' e.g. like this:
-;;
-;; (gtk-pomodoro-indicator
-;;  (cl-case state
-;;    (:pomodoro "p 25")
-;;    (:short-break "b 5")
-;;    (:long-break "b 20")
-;;    (t (error "unexpected"))))
+;; Use `gpi-setup' to integrate with `org-pomodoro'.
 
 ;;; Code:
 
@@ -56,6 +49,21 @@ The timer will self-terminate after it expires."
            "pomodoro" nil
            shell-file-name shell-command-switch
            cmd))))
+
+(defun gpi--org-pomodoro-advice (orig-fun state)
+  (gtk-pomodoro-indicator
+   (cl-case state
+     (:pomodoro "p 25")
+     (:short-break "b 5")
+     (:long-break "b 20")
+     (t (error "unexpected"))))
+  (funcall orig-fun state))
+
+(defun gpi-setup (&optional turn-off)
+  (require 'org-pomodoro)
+  (if turn-off
+      (advice-remove 'org-pomodoro-start 'gpi--org-pomodoro-advice)
+    (advice-add 'org-pomodoro-start :around 'gpi--org-pomodoro-advice)))
 
 (provide 'gtk-pomodoro-indicator)
 ;;; gtk-pomodoro-indicator.el ends here
