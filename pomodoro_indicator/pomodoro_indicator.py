@@ -1,4 +1,3 @@
-#!/usr/bin/python
 #* Info
 # Copyright (C) 2017 Oleh Krehel
 # Author: Oleh Krehel <ohwoeowho@gmail.com>
@@ -94,29 +93,33 @@ class PomodoroIndicator ():
         self.update.stop ()
         gtk.main_quit ()
 
-if os.path.islink (__file__):
-    __file__ = os.readlink (__file__)
-project_dir = os.path.dirname (os.path.abspath (__file__))
+def get_icon(f):
+    icons_dir = "/usr/local/pomodoro-indicator"
+    if not os.path.exists(icons_dir):
+        project_dir = os.path.dirname (os.path.abspath (__file__))
+        icons_dir = os.path.join(project_dir, "../icons")
+    return os.path.realpath(os.path.join(icons_dir, f))
 
-def project_expand (f):
-    return os.path.join (project_dir, f)
+def main(argv = None):
+    argv = argv or sys.argv
+    if len (argv) != 3:
+        print ("Usage: INDICATE [pbu] minutes")
+        sys.exit (1)
+
+    signal.signal (signal.SIGINT, signal.SIG_DFL)
+    icon_type = argv[1]
+    minutes = int (argv[2])
+    if icon_type == "p" or icon_type == "u":
+        icon_file = get_icon("stopwatch.svg")
+    elif icon_type == "b":
+        icon_file = get_icon("coffee.svg")
+    else:
+        print ("Unknown switch", icon_type)
+
+    PomodoroIndicator (icon_file, minutes, icon_type == "u")
+    GObject.threads_init ()
+    gtk.main ()
 
 #* Script
-if len (sys.argv) != 3:
-    print ("Usage: INDICATE [pbu] minutes")
-    sys.exit (1)
-
-signal.signal (signal.SIGINT, signal.SIG_DFL)
-icon_type = sys.argv[1]
-minutes = int (sys.argv[2])
-
-if icon_type == "p" or icon_type == "u":
-    icon_file = project_expand ("icons/stopwatch.svg")
-elif icon_type == "b":
-    icon_file = project_expand ("icons/coffee.svg")
-else:
-    print ("Unknown switch", icon_type)
-
-PomodoroIndicator (icon_file, minutes, icon_type == "u")
-GObject.threads_init ()
-gtk.main ()
+if __name__ == '__main__':
+    main(sys.argv)

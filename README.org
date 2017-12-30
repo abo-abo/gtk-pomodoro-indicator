@@ -8,15 +8,20 @@ This is a Pomodoro timer indicator for your GTK panel.
 sudo apt-get install python-gi
 #+end_src
 
+* Install
+#+begin_src sh
+sudo -H pip3 install pomodoro-indicator
+#+end_src
+
 * Usage
 Start a timer with a stopwatch icon for 25 minutes:
 #+begin_src sh
-./gtk-pomodoro-indicator.py p 25
+gpi p 25
 #+end_src
 
 Start a timer with a coffee icon for 5 minutes:
 #+begin_src sh
-./gtk-pomodoro-indicator.py b 5
+gpi b 5
 #+end_src
 
 * Icons

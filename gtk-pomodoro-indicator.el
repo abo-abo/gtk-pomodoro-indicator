@@ -40,7 +40,7 @@ The timer will self-terminate after it expires."
   (let ((cmd
          (format "python %s %s"
                  (shell-quote-argument
-                  (expand-file-name "gtk-pomodoro-indicator.py" gpi--dir))
+                  (expand-file-name "pomodoro_indicator/pomodoro_indicator.py" gpi--dir))
                  params)))
     (when (process-live-p gpi--process)
       (kill-process gpi--process))
