@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pomodoro-indicator',
-    version='0.1.2',
+    version='0.2.0',
     description='Pomodoro timer indicator.',
     long_description='https://raw.githubusercontent.com/abo-abo/gtk-pomodoro-indicator/master/README.org',
     packages=find_packages(),
