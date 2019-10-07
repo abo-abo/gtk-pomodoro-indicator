@@ -23,10 +23,12 @@ import os
 import signal
 import gi
 gi.require_version ("Gtk", "3.0")
+gi.require_version('Notify', '0.7')
 gi.require_version ("AppIndicator3", "0.1")
 from gi.repository import Gtk as gtk
 from gi.repository import AppIndicator3 as appindicator
 from gi.repository import GObject
+from gi.repository import Notify
 import time
 import threading
 import sys
@@ -44,11 +46,13 @@ class StoppableThread (threading.Thread):
         return self._stop.isSet ()
 
 class PomodoroIndicator ():
-    def __init__ (self, icon, minutes, count_up = False):
+    def __init__ (self, icon, minutes, count_up = False, notify = False):
         self.app = "pomodoro-indicator"
         self.start_time = time.time ()
         self.max_time = minutes*60
         self.count_up = count_up
+        self.notify = notify
+        Notify.init("pomodoro-indicator")
         self.indicator = appindicator.Indicator.new (
             self.app,
             icon,
@@ -87,12 +91,19 @@ class PomodoroIndicator ():
                 self.indicator.set_label,
                 mention, self.app,
                 priority = GObject.PRIORITY_DEFAULT)
+        self.send_notification()
         gtk.main_quit ()
 
     def stop (self, source):
         self.update.stop ()
+        self.send_notification()
         gtk.main_quit ()
 
+    def send_notification (self):
+        if self.notify:
+            n = Notify.Notification.new("Done!")
+            n.show()
+          
 def get_icon(f):
     icons_dir = "/usr/local/pomodoro-indicator"
     if not os.path.exists(icons_dir):
@@ -102,13 +113,17 @@ def get_icon(f):
 
 def main(argv = None):
     argv = argv or sys.argv
-    if len (argv) != 3:
+    if len (argv) < 3:
         print ("Usage: INDICATE [pbu] minutes")
         sys.exit (1)
 
     signal.signal (signal.SIGINT, signal.SIG_DFL)
     icon_type = argv[1]
     minutes = int (argv[2])
+    if len (argv) == 4:
+       notify = argv[3]
+    else:
+       notify = None
     if icon_type == "p" or icon_type == "u":
         icon_file = get_icon("stopwatch.svg")
     elif icon_type == "b":
@@ -116,7 +131,7 @@ def main(argv = None):
     else:
         print ("Unknown switch", icon_type)
 
-    PomodoroIndicator (icon_file, minutes, icon_type == "u")
+    PomodoroIndicator (icon_file, minutes, icon_type == "u", notify == "--notify")
     GObject.threads_init ()
     gtk.main ()
 
