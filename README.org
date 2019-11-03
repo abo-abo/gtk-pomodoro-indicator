@@ -24,6 +24,11 @@ Start a timer with a coffee icon for 5 minutes:
 gpi b 5
 #+end_src
 
+You can be notified of the end of the task with a custom message notification using --notify option:
+#+begin_src sh
+gpi b 5 --notify NOTIFY_MESSAGE
+#+end_src
+
 * Icons
 Icons files are obtained from http://www.pixeden.com/icon-fonts/stroke-7-icon-font-set.
 They are free for personal and commercial use.
